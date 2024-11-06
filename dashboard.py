@@ -138,3 +138,43 @@ with st.expander("View time series Data"):
     st.write(linechart)
     csv =  linechart.to_csv(index=False).encode('utf-8')
     st.download_button("download data",data=csv,file_name="TimeSeries.csv")
+
+#Segment wise sales
+chart1,chart2 = st.columns((2))
+with chart1:
+    st.subheader("Segement wise chart")
+    fig = ex.pie(filtered_df,values="Sales",names="Segment", template="plotly_dark")
+    fig.update_traces(text = filtered_df["Segment"],textposition="inside")
+    st.plotly_chart(fig,use_container_width=True)
+
+with chart2:
+    st.subheader("Category wise chart")
+    fig = ex.pie(filtered_df,values="Sales",names="Category", template="gridon")
+    fig.update_traces(text = filtered_df["Category"],textposition="inside")
+    st.plotly_chart(fig,use_container_width=True)
+
+
+st.markdown("Month wise sub category Table")
+filtered_df ["month"] = filtered_df["Order Date"].dt.month_name()
+subcategory_year = pd.pivot_table(filtered_df,values="Sales", index="Sub-Category",columns="month")
+st.write(subcategory_year)
+
+
+
+# Assuming 'filtered_df' is your filtered DataFrame based on user input
+st.subheader("Scatter Plot: Sales vs. Profit")
+
+# Create the scatter plot using Plotly Express
+scatter_fig = ex.scatter(
+    filtered_df,
+    x="Sales",
+    y="Profit",
+    color="Category",  # Optional: differentiates points by category
+    size="Sales",      # Optional: scales the point size based on Sales
+    hover_data=["Region", "Segment"],  # Additional data to show on hover
+    title="Sales vs. Profit Scatter Plot",
+    template="plotly_white"  # You can change this to another template as needed
+)
+
+# Display the plot in Streamlit
+st.plotly_chart(scatter_fig, use_container_width=True)
